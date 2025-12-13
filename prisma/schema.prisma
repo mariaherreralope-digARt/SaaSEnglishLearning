@@ -1,0 +1,124 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// SQLite doesn't support enums, using String instead
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("STUDENT") // STUDENT, ADMIN
+  avatar       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  progress UserProgress[]
+  logs     Log[]
+
+  @@map("users")
+}
+
+model Level {
+  id          String   @id @default(cuid())
+  name        String   @unique // A1, A2, B1, B2, C1, C2
+  description String
+  order       Int      @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  lessons Lesson[]
+
+  @@map("levels")
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  content     String   // Lesson content/material
+  levelId     String
+  category    String   // Grammar, Vocabulary, Listening, Speaking, Reading, Writing
+  order       Int      // Sequence within level
+  duration    Int      // Estimated minutes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  level     Level          @relation(fields: [levelId], references: [id])
+  exercises Exercise[]
+  progress  UserProgress[]
+
+  @@index([levelId])
+  @@index([category])
+  @@map("lessons")
+}
+
+model Exercise {
+  id            String   @id @default(cuid())
+  lessonId      String
+  question      String
+  type          String   // MULTIPLE_CHOICE, FILL_BLANK, MATCHING
+  correctAnswer String
+  options       String?  // JSON string for multiple choice options
+  points        Int      @default(10)
+  order         Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  lesson   Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  progress UserProgress[]
+
+  @@index([lessonId])
+  @@map("exercises")
+}
+
+model UserProgress {
+  id           String   @id @default(cuid())
+  userId       String
+  lessonId     String?
+  exerciseId   String?
+  completed    Boolean  @default(false)
+  score        Int?     // Points earned
+  timeSpent    Int?     // Seconds
+  lastAccessed DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson   Lesson?   @relation(fields: [lessonId], references: [id])
+  exercise Exercise? @relation(fields: [exerciseId], references: [id])
+
+  @@index([userId])
+  @@index([lessonId])
+  @@index([exerciseId])
+  @@map("user_progress")
+}
+
+model Log {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  metadata  String?  // JSON string for additional context
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("logs")
+}
