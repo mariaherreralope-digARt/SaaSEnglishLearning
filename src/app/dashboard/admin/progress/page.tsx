@@ -45,14 +45,16 @@ export default async function UserProgressPage() {
     },
   ];
 
-  const data = progressRecords.map((record) => ({
-    key: record.id,
-    student: record.user.name,
-    lesson: record.lesson.title,
-    status: record.completed ? "Completed" : "In Progress",
-    score: record.score,
-    timeSpent: record.timeSpent,
-  }));
+  const data = progressRecords
+    .filter((record) => record.lesson !== null)
+    .map((record) => ({
+      key: record.id,
+      student: record.user.name,
+      lesson: record.lesson!.title,
+      status: record.completed ? "Completed" : "In Progress",
+      score: record.score,
+      timeSpent: record.timeSpent,
+    }));
 
   return (
     <div style={{ padding: "24px" }}>
