@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SellPoint - Marketplace for Digital & Physical Goods",
-  description: "Buy and sell items with ease on SellPoint marketplace",
+  title: "LearnEnglish | English Learning Platform",
+  description: "Interactive English learning platform with lessons, exercises, and progress tracking",
 };
 
 export default function RootLayout({

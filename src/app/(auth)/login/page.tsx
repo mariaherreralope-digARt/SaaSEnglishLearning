@@ -57,9 +57,9 @@ export default function LoginPage() {
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <Title level={2} style={{ marginBottom: 8 }}>
-              Welcome to SellPoint
+              Welcome to LearnEnglish
             </Title>
-            <Text type="secondary">Sign in to your account</Text>
+            <Text type="secondary">Sign in to continue your learning journey</Text>
           </div>
 
           <Form
@@ -107,9 +107,9 @@ export default function LoginPage() {
               <br />
               Admin: admin@sellpoint.com / admin123
               <br />
-              Seller: seller@sellpoint.com / seller123
+              Teacher: seller@sellpoint.com / seller123
               <br />
-              Buyer: buyer@sellpoint.com / buyer123
+              Student: buyer@sellpoint.com / buyer123
             </Text>
           </div>
         </Space>
