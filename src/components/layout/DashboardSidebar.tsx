@@ -47,9 +47,9 @@ export default function DashboardSidebar() {
     },
   ];
 
-  // Admin-only items
+  // Admin-only items (ADMIN and TEACHER)
   const adminItems =
-    userRole === "ADMIN"
+    userRole === "ADMIN" || userRole === "TEACHER"
       ? [
           {
             key: "admin-section",

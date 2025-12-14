@@ -26,7 +26,20 @@ export default function LoginPage() {
         message.error("Invalid email or password");
       } else {
         message.success("Login successful!");
-        router.push("/dashboard");
+        
+        // Get the session to determine redirect based on role
+        const { getSession } = await import("next-auth/react");
+        const session = await getSession();
+        
+        const userRole = session?.user?.role;
+        
+        // Redirect based on role
+        if (userRole === "ADMIN" || userRole === "TEACHER") {
+          router.push("/dashboard/admin");
+        } else {
+          router.push("/dashboard");
+        }
+        
         router.refresh();
       }
     } catch (error) {

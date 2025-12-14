@@ -45,6 +45,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+      const isOnAdminRoute = nextUrl.pathname.startsWith("/dashboard/admin");
+      const userRole = auth?.user?.role;
+
+      // Redirect to login if not authenticated and trying to access dashboard
+      if (isOnDashboard && !isLoggedIn) {
+        return false; // Redirect to login page
+      }
+
+      // Block STUDENT users from accessing admin routes
+      if (isOnAdminRoute && userRole !== "ADMIN" && userRole !== "TEACHER") {
+        // Redirect students to their dashboard
+        return Response.redirect(new URL("/dashboard", nextUrl));
+      }
+
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -69,4 +88,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true,
 });
