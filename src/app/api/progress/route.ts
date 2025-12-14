@@ -19,7 +19,7 @@ export async function GET() {
         lesson: record.lesson!.title,
         status: record.completed ? "Completed" : "In Progress",
         score: record.score,
-        timeSpent: `${Math.floor(record.timeSpent / 60)} min`,
+        timeSpent: `${Math.floor((record.timeSpent || 0) / 60)} min`,
       }));
 
     return NextResponse.json(data);
