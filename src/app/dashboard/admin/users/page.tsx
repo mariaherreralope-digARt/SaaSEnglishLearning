@@ -1,12 +1,15 @@
-"use client";
-
 import { Card, Table, Tag, Typography, Space, Button } from "antd";
 import { UserOutlined, EditOutlined } from "@ant-design/icons";
+import { prisma } from "@/lib/prisma";
 
 const { Title } = Typography;
 
-export default function ManageUsers() {
-  // Placeholder data
+export default async function ManageUsers() {
+  // Fetch real users from database
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
   const columns = [
     {
       title: "Name",
@@ -32,6 +35,7 @@ export default function ManageUsers() {
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
+      render: (date: Date) => new Date(date).toLocaleDateString(),
     },
     {
       title: "Actions",
@@ -46,7 +50,13 @@ export default function ManageUsers() {
     },
   ];
 
-  const data: any[] = [];
+  const data = users.map((user) => ({
+    key: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    createdAt: user.createdAt,
+  }));
 
   return (
     <div style={{ padding: "24px" }}>

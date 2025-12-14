@@ -2,17 +2,19 @@
 
 import { Card, Table, Tag, Typography } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
+import { prisma } from "@/lib/prisma";
 
 const { Title } = Typography;
 
-export default function ActivityLogs() {
-  // Placeholder data
+export default async function ActivityLogsPage() {
+  // Fetch real logs from database
+  const logs = await prisma.log.findMany({
+    include: { user: true },
+    orderBy: { createdAt: "desc" },
+    take: 50, // Limit to last 50 logs
+  });
+
   const columns = [
-    {
-      title: "Timestamp",
-      dataIndex: "timestamp",
-      key: "timestamp",
-    },
     {
       title: "User",
       dataIndex: "user",
@@ -23,39 +25,34 @@ export default function ActivityLogs() {
       dataIndex: "action",
       key: "action",
       render: (action: string) => {
-        const color = action.includes("LOGIN")
-          ? "blue"
-          : action.includes("COMPLETED")
-          ? "green"
-          : "default";
-        return <Tag color={color}>{action}</Tag>;
+        const color =
+          action.includes("LOGIN")
+            ? "blue"
+            : action.includes("COMPLETED")
+            ? "green"
+            : "default";
+        return <Tag color={color}>{action.replace(/_/g, " ")}</Tag>;
       },
     },
     {
-      title: "Details",
-      dataIndex: "details",
-      key: "details",
+      title: "Timestamp",
+      dataIndex: "timestamp",
+      key: "timestamp",
     },
   ];
 
-  const data: any[] = [];
+  const data = logs.map((log) => ({
+    key: log.id,
+    user: log.user.name,
+    action: log.action,
+    timestamp: new Date(log.createdAt).toLocaleString(),
+  }));
 
   return (
     <div style={{ padding: "24px" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: 24,
-        }}
-      >
-        <FileTextOutlined style={{ fontSize: 32, marginRight: 12 }} />
-        <Title level={2} style={{ margin: 0 }}>
-          Activity Logs
-        </Title>
-      </div>
+      <Title level={2}>Activity Logs</Title>
 
-      <Card>
+      <Card style={{ marginTop: 24 }}>
         <Table
           columns={columns}
           dataSource={data}

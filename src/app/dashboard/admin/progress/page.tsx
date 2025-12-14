@@ -1,73 +1,68 @@
-"use client";
-
-import { Card, Table, Progress, Typography, Tag } from "antd";
-import { TrophyOutlined } from "@ant-design/icons";
+import { Card, Table, Tag, Typography } from "antd";
+import { prisma } from "@/lib/prisma";
 
 const { Title } = Typography;
 
-export default function UserProgress() {
-  // Placeholder data
+export default async function UserProgressPage() {
+  // Fetch real progress data from database
+  const progressRecords = await prisma.userProgress.findMany({
+    include: {
+      user: true,
+      lesson: true,
+    },
+    orderBy: { updatedAt: "desc" },
+  });
+
   const columns = [
     {
-      title: "Student Name",
-      dataIndex: "studentName",
-      key: "studentName",
+      title: "Student",
+      dataIndex: "student",
+      key: "student",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      title: "Lesson",
+      dataIndex: "lesson",
+      key: "lesson",
     },
     {
-      title: "Lessons Completed",
-      dataIndex: "lessonsCompleted",
-      key: "lessonsCompleted",
-      render: (count: number) => <Tag color="green">{count}</Tag>,
-    },
-    {
-      title: "Total Score",
-      dataIndex: "totalScore",
-      key: "totalScore",
-    },
-    {
-      title: "Progress",
-      dataIndex: "progress",
-      key: "progress",
-      render: (progress: number) => (
-        <Progress percent={progress} size="small" />
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status: string) => (
+        <Tag color={status === "Completed" ? "green" : "orange"}>{status}</Tag>
       ),
     },
     {
-      title: "Last Active",
-      dataIndex: "lastActive",
-      key: "lastActive",
+      title: "Score",
+      dataIndex: "score",
+      key: "score",
+    },
+    {
+      title: "Time Spent",
+      dataIndex: "timeSpent",
+      key: "timeSpent",
+      render: (seconds: number) => `${Math.floor(seconds / 60)} min`,
     },
   ];
 
-  const data: any[] = [];
+  const data = progressRecords.map((record) => ({
+    key: record.id,
+    student: record.user.name,
+    lesson: record.lesson.title,
+    status: record.completed ? "Completed" : "In Progress",
+    score: record.score,
+    timeSpent: record.timeSpent,
+  }));
 
   return (
     <div style={{ padding: "24px" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: 24,
-        }}
-      >
-        <TrophyOutlined style={{ fontSize: 32, marginRight: 12 }} />
-        <Title level={2} style={{ margin: 0 }}>
-          User Progress Overview
-        </Title>
-      </div>
+      <Title level={2}>User Progress Overview</Title>
 
-      <Card>
+      <Card style={{ marginTop: 24 }}>
         <Table
           columns={columns}
           dataSource={data}
-          locale={{
-            emptyText: "No student progress data available",
-          }}
+          locale={{ emptyText: "No progress data found" }}
         />
       </Card>
     </div>

@@ -1,12 +1,16 @@
-"use client";
-
 import { Card, Table, Button, Space, Typography, Tag } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { prisma } from "@/lib/prisma";
 
 const { Title } = Typography;
 
-export default function ManageLessons() {
-  // Placeholder data
+export default async function ManageLessons() {
+  // Fetch real lessons from database
+  const lessons = await prisma.lesson.findMany({
+    include: { level: true },
+    orderBy: { order: "asc" },
+  });
+
   const columns = [
     {
       title: "Title",
@@ -46,7 +50,13 @@ export default function ManageLessons() {
     },
   ];
 
-  const data: any[] = [];
+  const data = lessons.map((lesson) => ({
+    key: lesson.id,
+    title: lesson.title,
+    level: lesson.level.name,
+    category: lesson.category,
+    duration: lesson.duration,
+  }));
 
   return (
     <div style={{ padding: "24px" }}>
