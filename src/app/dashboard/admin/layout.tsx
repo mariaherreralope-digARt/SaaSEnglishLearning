@@ -8,7 +8,7 @@ import { Spin } from "antd";
 export default function AdminLayout({
   children,
 }: {
-  children: React.Node;
+  children: React.ReactNode;
 }) {
   const { data: session, status } = useSession();
   const router = useRouter();
