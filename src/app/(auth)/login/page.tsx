@@ -105,11 +105,11 @@ export default function LoginPage() {
             <Text type="secondary" style={{ fontSize: 12 }}>
               <strong>Test Credentials:</strong>
               <br />
-              Admin: admin@sellpoint.com / admin123
+              Admin: admin@learnenglish.com / admin123
               <br />
-              Teacher: seller@sellpoint.com / seller123
+              Teacher: teacher@learnenglish.com / teacher123
               <br />
-              Student: buyer@sellpoint.com / buyer123
+              Student: student@learnenglish.com / student123
             </Text>
           </div>
         </Space>
