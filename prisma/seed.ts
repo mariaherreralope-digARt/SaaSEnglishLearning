@@ -17,6 +17,7 @@ async function main() {
 
   // Create users
   const adminPassword = await hash("admin123", 12);
+  const teacherPassword = await hash("teacher123", 12);
   const studentPassword = await hash("student123", 12);
 
   const admin = await prisma.user.create({
@@ -25,6 +26,15 @@ async function main() {
       email: "admin@learnenglish.com",
       passwordHash: adminPassword,
       role: "ADMIN",
+    },
+  });
+
+  const teacher = await prisma.user.create({
+    data: {
+      name: "Sarah Teacher",
+      email: "teacher@learnenglish.com",
+      passwordHash: teacherPassword,
+      role: "TEACHER",
     },
   });
 
@@ -37,7 +47,7 @@ async function main() {
     },
   });
 
-  console.log("✅ Created users (admin@learnenglish.com / admin123, student@learnenglish.com / student123)");
+  console.log("✅ Created users (admin@learnenglish.com / admin123, teacher@learnenglish.com / teacher123, student@learnenglish.com / student123)");
 
   // Create levels (CEFR)
   const levelA1 = await prisma.level.create({
@@ -243,6 +253,7 @@ async function main() {
   console.log("\n🎉 Database seeded successfully!");
   console.log("\n📚 Test Accounts:");
   console.log("   Admin: admin@learnenglish.com / admin123");
+  console.log("   Teacher: teacher@learnenglish.com / teacher123");
   console.log("   Student: student@learnenglish.com / student123");
 }
 
