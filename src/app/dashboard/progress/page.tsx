@@ -21,7 +21,7 @@ const progressData = {
   levelProgress: 0,
 };
 
-const recentActivity = [
+const recentActivity: any[] = [
   // Empty for now - would be populated from database
 ];
 
