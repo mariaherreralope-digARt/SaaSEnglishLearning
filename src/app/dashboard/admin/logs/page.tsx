@@ -1,18 +1,23 @@
 "use client";
 
 import { Card, Table, Tag, Typography } from "antd";
-import { FileTextOutlined } from "@ant-design/icons";
-import { prisma } from "@/lib/prisma";
+import { useEffect, useState } from "react";
 
 const { Title } = Typography;
 
-export default async function ActivityLogsPage() {
-  // Fetch real logs from database
-  const logs = await prisma.log.findMany({
-    include: { user: true },
-    orderBy: { createdAt: "desc" },
-    take: 50, // Limit to last 50 logs
-  });
+export default function ActivityLogsPage() {
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/logs")
+      .then((res) => res.json())
+      .then((data) => {
+        setLogs(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   const columns = [
     {
@@ -31,7 +36,7 @@ export default async function ActivityLogsPage() {
             : action.includes("COMPLETED")
             ? "green"
             : "default";
-        return <Tag color={color}>{action.replace(/_/g, " ")}</Tag>;
+        return <Tag color={color}>{action}</Tag>;
       },
     },
     {
@@ -41,13 +46,6 @@ export default async function ActivityLogsPage() {
     },
   ];
 
-  const data = logs.map((log) => ({
-    key: log.id,
-    user: log.user.name,
-    action: log.action,
-    timestamp: new Date(log.createdAt).toLocaleString(),
-  }));
-
   return (
     <div style={{ padding: "24px" }}>
       <Title level={2}>Activity Logs</Title>
@@ -55,10 +53,9 @@ export default async function ActivityLogsPage() {
       <Card style={{ marginTop: 24 }}>
         <Table
           columns={columns}
-          dataSource={data}
-          locale={{
-            emptyText: "No activity logs found",
-          }}
+          dataSource={logs}
+          loading={loading}
+          locale={{ emptyText: "No activity logs found" }}
         />
       </Card>
     </div>

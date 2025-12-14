@@ -1,14 +1,24 @@
+"use client";
+
 import { Card, Table, Tag, Typography, Space, Button } from "antd";
 import { UserOutlined, EditOutlined } from "@ant-design/icons";
-import { prisma } from "@/lib/prisma";
+import { useEffect, useState } from "react";
 
 const { Title } = Typography;
 
-export default async function ManageUsers() {
-  // Fetch real users from database
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+export default function ManageUsers() {
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/users")
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   const columns = [
     {
@@ -35,7 +45,7 @@ export default async function ManageUsers() {
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (date: Date) => new Date(date).toLocaleDateString(),
+      render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {
       title: "Actions",
@@ -49,14 +59,6 @@ export default async function ManageUsers() {
       ),
     },
   ];
-
-  const data = users.map((user) => ({
-    key: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    createdAt: user.createdAt,
-  }));
 
   return (
     <div style={{ padding: "24px" }}>
@@ -77,7 +79,8 @@ export default async function ManageUsers() {
       <Card>
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={users}
+          loading={loading}
           locale={{ emptyText: "No users found" }}
         />
       </Card>

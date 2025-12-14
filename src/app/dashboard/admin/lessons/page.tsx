@@ -1,15 +1,24 @@
+"use client";
+
 import { Card, Table, Button, Space, Typography, Tag } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { prisma } from "@/lib/prisma";
+import { useEffect, useState } from "react";
 
 const { Title } = Typography;
 
-export default async function ManageLessons() {
-  // Fetch real lessons from database
-  const lessons = await prisma.lesson.findMany({
-    include: { level: true },
-    orderBy: { order: "asc" },
-  });
+export default function ManageLessons() {
+  const [lessons, setLessons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/lessons")
+      .then((res) => res.json())
+      .then((data) => {
+        setLessons(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   const columns = [
     {
@@ -50,14 +59,6 @@ export default async function ManageLessons() {
     },
   ];
 
-  const data = lessons.map((lesson) => ({
-    key: lesson.id,
-    title: lesson.title,
-    level: lesson.level.name,
-    category: lesson.category,
-    duration: lesson.duration,
-  }));
-
   return (
     <div style={{ padding: "24px" }}>
       <div
@@ -77,7 +78,8 @@ export default async function ManageLessons() {
       <Card>
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={lessons}
+          loading={loading}
           locale={{ emptyText: "No lessons found. Create your first lesson!" }}
         />
       </Card>

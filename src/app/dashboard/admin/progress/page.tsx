@@ -1,17 +1,23 @@
+"use client";
+
 import { Card, Table, Tag, Typography } from "antd";
-import { prisma } from "@/lib/prisma";
+import { useEffect, useState } from "react";
 
 const { Title } = Typography;
 
-export default async function UserProgressPage() {
-  // Fetch real progress data from database
-  const progressRecords = await prisma.userProgress.findMany({
-    include: {
-      user: true,
-      lesson: true,
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+export default function UserProgressPage() {
+  const [progress, setProgress] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/progress")
+      .then((res) => res.json())
+      .then((data) => {
+        setProgress(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   const columns = [
     {
@@ -41,20 +47,8 @@ export default async function UserProgressPage() {
       title: "Time Spent",
       dataIndex: "timeSpent",
       key: "timeSpent",
-      render: (seconds: number) => `${Math.floor(seconds / 60)} min`,
     },
   ];
-
-  const data = progressRecords
-    .filter((record) => record.lesson !== null)
-    .map((record) => ({
-      key: record.id,
-      student: record.user.name,
-      lesson: record.lesson!.title,
-      status: record.completed ? "Completed" : "In Progress",
-      score: record.score,
-      timeSpent: record.timeSpent,
-    }));
 
   return (
     <div style={{ padding: "24px" }}>
@@ -63,7 +57,8 @@ export default async function UserProgressPage() {
       <Card style={{ marginTop: 24 }}>
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={progress}
+          loading={loading}
           locale={{ emptyText: "No progress data found" }}
         />
       </Card>
