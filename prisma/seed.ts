@@ -38,7 +38,7 @@ async function main() {
     },
   });
 
-  const student = await prisma.user.create({
+  const student1 = await prisma.user.create({
     data: {
       name: "John Student",
       email: "student@learnenglish.com",
@@ -47,7 +47,34 @@ async function main() {
     },
   });
 
-  console.log("✅ Created users (admin@learnenglish.com / admin123, teacher@learnenglish.com / teacher123, student@learnenglish.com / student123)");
+  const student2 = await prisma.user.create({
+    data: {
+      name: "Emma Wilson",
+      email: "emma.wilson@learnenglish.com",
+      passwordHash: studentPassword,
+      role: "STUDENT",
+    },
+  });
+
+  const student3 = await prisma.user.create({
+    data: {
+      name: "Michael Chen",
+      email: "michael.chen@learnenglish.com",
+      passwordHash: studentPassword,
+      role: "STUDENT",
+    },
+  });
+
+  const student4 = await prisma.user.create({
+    data: {
+      name: "Sofia Rodriguez",
+      email: "sofia.rodriguez@learnenglish.com",
+      passwordHash: studentPassword,
+      role: "STUDENT",
+    },
+  });
+
+  console.log("✅ Created users (1 admin, 1 teacher, 4 students)");
 
   // Create levels (CEFR)
   const levelA1 = await prisma.level.create({
@@ -113,7 +140,7 @@ async function main() {
     },
   });
 
-  // Create lesson for A2
+  // Create lessons for A2
   const lesson4 = await prisma.lesson.create({
     data: {
       title: "Past Simple Tense",
@@ -126,10 +153,22 @@ async function main() {
     },
   });
 
-  console.log("✅ Created sample lessons");
+  const lesson5 = await prisma.lesson.create({
+    data: {
+      title: "Making Requests and Offers",
+      description: "Learn polite ways to ask for things and make offers",
+      content: "Practice using 'Can I...?', 'Could you...?', 'Would you like...?' in everyday situations.",
+      levelId: levelA2.id,
+      category: "Speaking",
+      order: 2,
+      duration: 25,
+    },
+  });
+
+  console.log("✅ Created 5 lessons across A1 and A2 levels");
 
   // Create exercises for Lesson 1
-  await prisma.exercise.create({
+  const ex1_1 = await prisma.exercise.create({
     data: {
       lessonId: lesson1.id,
       question: "How do you greet someone in the morning?",
@@ -141,7 +180,7 @@ async function main() {
     },
   });
 
-  await prisma.exercise.create({
+  const ex1_2 = await prisma.exercise.create({
     data: {
       lessonId: lesson1.id,
       question: "Complete: 'My name ___ John.'",
@@ -153,7 +192,7 @@ async function main() {
   });
 
   // Create exercises for Lesson 2
-  await prisma.exercise.create({
+  const ex2_1 = await prisma.exercise.create({
     data: {
       lessonId: lesson2.id,
       question: "What comes after nineteen?",
@@ -166,7 +205,7 @@ async function main() {
   });
 
   // Create exercises for Lesson 3
-  await prisma.exercise.create({
+  const ex3_1 = await prisma.exercise.create({
     data: {
       lessonId: lesson3.id,
       question: "Choose the correct form: 'She ___ to school every day.'",
@@ -178,7 +217,7 @@ async function main() {
     },
   });
 
-  await prisma.exercise.create({
+  const ex3_2 = await prisma.exercise.create({
     data: {
       lessonId: lesson3.id,
       question: "Complete: 'I ___ English every day.'",
@@ -189,12 +228,25 @@ async function main() {
     },
   });
 
-  console.log("✅ Created sample exercises");
+  // Create exercises for Lesson 4
+  const ex4_1 = await prisma.exercise.create({
+    data: {
+      lessonId: lesson4.id,
+      question: "Choose the past tense: 'I ___ to the park yesterday.'",
+      type: "MULTIPLE_CHOICE",
+      correctAnswer: "went",
+      options: JSON.stringify(["go", "goes", "went", "going"]),
+      points: 10,
+      order: 1,
+    },
+  });
 
-  // Create some progress for the student
+  console.log("✅ Created exercises for all lessons");
+
+  // Create progress for student1 (John) - Advanced beginner
   await prisma.userProgress.create({
     data: {
-      userId: student.id,
+      userId: student1.id,
       lessonId: lesson1.id,
       completed: true,
       score: 20,
@@ -204,7 +256,7 @@ async function main() {
 
   await prisma.userProgress.create({
     data: {
-      userId: student.id,
+      userId: student1.id,
       lessonId: lesson2.id,
       completed: false,
       score: 10,
@@ -212,49 +264,353 @@ async function main() {
     },
   });
 
-  console.log("✅ Created sample progress");
+  await prisma.userProgress.create({
+    data: {
+      userId: student1.id,
+      lessonId: lesson3.id,
+      completed: true,
+      score: 20,
+      timeSpent: 1200, // 20 minutes
+    },
+  });
 
-  // Create activity logs
+  // Create progress for student2 (Emma) - Just started
+  await prisma.userProgress.create({
+    data: {
+      userId: student2.id,
+      lessonId: lesson1.id,
+      completed: false,
+      score: 10,
+      timeSpent: 450, // 7.5 minutes
+    },
+  });
+
+  // Create progress for student3 (Michael) - Intermediate progress
+  await prisma.userProgress.create({
+    data: {
+      userId: student3.id,
+      lessonId: lesson1.id,
+      completed: true,
+      score: 20,
+      timeSpent: 800,
+    },
+  });
+
+  await prisma.userProgress.create({
+    data: {
+      userId: student3.id,
+      lessonId: lesson2.id,
+      completed: true,
+      score: 10,
+      timeSpent: 1000,
+    },
+  });
+
+  await prisma.userProgress.create({
+    data: {
+      userId: student3.id,
+      lessonId: lesson3.id,
+      completed: true,
+      score: 20,
+      timeSpent: 1500,
+    },
+  });
+
+  await prisma.userProgress.create({
+    data: {
+      userId: student3.id,
+      lessonId: lesson4.id,
+      completed: false,
+      score: 10,
+      timeSpent: 600,
+    },
+  });
+
+  // Create progress for student4 (Sofia) - Completed A1, working on A2
+  await prisma.userProgress.create({
+    data: {
+      userId: student4.id,
+      lessonId: lesson1.id,
+      completed: true,
+      score: 20,
+      timeSpent: 700,
+    },
+  });
+
+  await prisma.userProgress.create({
+    data: {
+      userId: student4.id,
+      lessonId: lesson2.id,
+      completed: true,
+      score: 10,
+      timeSpent: 950,
+    },
+  });
+
+  await prisma.userProgress.create({
+    data: {
+      userId: student4.id,
+      lessonId: lesson3.id,
+      completed: true,
+      score: 20,
+      timeSpent: 1400,
+    },
+  });
+
+  await prisma.userProgress.create({
+    data: {
+      userId: student4.id,
+      lessonId: lesson4.id,
+      completed: true,
+      score: 10,
+      timeSpent: 1800,
+    },
+  });
+
+  await prisma.userProgress.create({
+    data: {
+      userId: student4.id,
+      lessonId: lesson5.id,
+      completed: false,
+      score: 0,
+      timeSpent: 200,
+    },
+  });
+
+  console.log("✅ Created user progress for all students");
+
+  // Create activity logs - User registrations
   await prisma.log.create({
     data: {
       userId: admin.id,
       action: "USER_REGISTERED",
       metadata: JSON.stringify({
         role: "ADMIN",
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
       }),
     },
   });
 
   await prisma.log.create({
     data: {
-      userId: student.id,
+      userId: teacher.id,
+      action: "USER_REGISTERED",
+      metadata: JSON.stringify({
+        role: "TEACHER",
+        timestamp: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: student1.id,
       action: "USER_REGISTERED",
       metadata: JSON.stringify({
         role: "STUDENT",
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
       }),
     },
   });
 
   await prisma.log.create({
     data: {
-      userId: student.id,
-      action: "LESSON_COMPLETED",
+      userId: student2.id,
+      action: "USER_REGISTERED",
       metadata: JSON.stringify({
-        lessonId: lesson1.id,
-        score: 20,
-        timestamp: new Date().toISOString(),
+        role: "STUDENT",
+        timestamp: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
       }),
     },
   });
 
-  console.log("✅ Created activity logs");
+  await prisma.log.create({
+    data: {
+      userId: student3.id,
+      action: "USER_REGISTERED",
+      metadata: JSON.stringify({
+        role: "STUDENT",
+        timestamp: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: student4.id,
+      action: "USER_REGISTERED",
+      metadata: JSON.stringify({
+        role: "STUDENT",
+        timestamp: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  // Login events
+  await prisma.log.create({
+    data: {
+      userId: admin.id,
+      action: "USER_LOGIN",
+      metadata: JSON.stringify({
+        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: student1.id,
+      action: "USER_LOGIN",
+      metadata: JSON.stringify({
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: student3.id,
+      action: "USER_LOGIN",
+      metadata: JSON.stringify({
+        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  // Lesson completion events
+  await prisma.log.create({
+    data: {
+      userId: student1.id,
+      action: "LESSON_COMPLETED",
+      metadata: JSON.stringify({
+        lessonId: lesson1.id,
+        lessonTitle: "Greetings and Introductions",
+        score: 20,
+        timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: student1.id,
+      action: "LESSON_COMPLETED",
+      metadata: JSON.stringify({
+        lessonId: lesson3.id,
+        lessonTitle: "Present Simple Tense",
+        score: 20,
+        timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: student3.id,
+      action: "LESSON_COMPLETED",
+      metadata: JSON.stringify({
+        lessonId: lesson1.id,
+        lessonTitle: "Greetings and Introductions",
+        score: 20,
+        timestamp: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: student3.id,
+      action: "LESSON_COMPLETED",
+      metadata: JSON.stringify({
+        lessonId: lesson2.id,
+        lessonTitle: "Numbers 1-100",
+        score: 10,
+        timestamp: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: student4.id,
+      action: "LESSON_COMPLETED",
+      metadata: JSON.stringify({
+        lessonId: lesson4.id,
+        lessonTitle: "Past Simple Tense",
+        score: 10,
+        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  // Exercise attempt events
+  await prisma.log.create({
+    data: {
+      userId: student2.id,
+      action: "EXERCISE_ATTEMPTED",
+      metadata: JSON.stringify({
+        exerciseId: ex1_1.id,
+        lessonId: lesson1.id,
+        correct: true,
+        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: student3.id,
+      action: "EXERCISE_ATTEMPTED",
+      metadata: JSON.stringify({
+        exerciseId: ex4_1.id,
+        lessonId: lesson4.id,
+        correct: false,
+        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  // Admin/Teacher actions
+  await prisma.log.create({
+    data: {
+      userId: teacher.id,
+      action: "LESSON_CREATED",
+      metadata: JSON.stringify({
+        lessonId: lesson5.id,
+        lessonTitle: "Making Requests and Offers",
+        timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  await prisma.log.create({
+    data: {
+      userId: admin.id,
+      action: "USER_ROLE_UPDATED",
+      metadata: JSON.stringify({
+        targetUserId: teacher.id,
+        targetUserEmail: "teacher@learnenglish.com",
+        newRole: "TEACHER",
+        timestamp: new Date(Date.now() - 24 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+    },
+  });
+
+  console.log("✅ Created comprehensive activity logs");
   console.log("\n🎉 Database seeded successfully!");
   console.log("\n📚 Test Accounts:");
   console.log("   Admin: admin@learnenglish.com / admin123");
   console.log("   Teacher: teacher@learnenglish.com / teacher123");
-  console.log("   Student: student@learnenglish.com / student123");
+  console.log("   Student 1: student@learnenglish.com / student123");
+  console.log("   Student 2: emma.wilson@learnenglish.com / student123");
+  console.log("   Student 3: michael.chen@learnenglish.com / student123");
+  console.log("   Student 4: sofia.rodriguez@learnenglish.com / student123");
+  console.log("\n📊 Seed Data Summary:");
+  console.log("   - 6 users (1 admin, 1 teacher, 4 students)");
+  console.log("   - 5 lessons across A1 and A2 levels");
+  console.log("   - 6 exercises");
+  console.log("   - 13 user progress records");
+  console.log("   - 18 activity log entries");
 }
 
 main()
